@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'pexo'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A679563C8DF7452BBB6693AAF8DEA9F7 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_970DF2F33FA1450E8303FE19A526CD13 }}
