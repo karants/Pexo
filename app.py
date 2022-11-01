@@ -1,12 +1,35 @@
+import os
+import psycopg2
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+
 app = Flask(__name__)
+
+# Update connection string information
+
+host = os.environ['HOST']
+dbname = os.environ['DBNAME']
+user = os.environ['USER']
+password = os.environ['PASSWORD']
+sslmode = "require"
+
+# Construct connection string
+
+conn_string = "host={0} user={1} dbname={2} password={3} sslmode={4}".format(host, user, dbname, password, sslmode)
+conn = psycopg2.connect(conn_string)
+print("Connection established")
+
+cursor = conn.cursor()
 
 
 @app.route('/')
 def index():
    print('Request for index page received')
-   return render_template('index.html')
+   cursor.execute('SELECT * FROM exoplanets;')
+   exoplanets = cursor.fetchall()
+   cursor.close()
+   conn.close()
+   return render_template('index.html', exoplanets=exoplanets)
 
 @app.route('/favicon.ico')
 def favicon():

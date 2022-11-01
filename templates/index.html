@@ -25,6 +25,14 @@
                 </div>            
             </div>
         </form>
+        {% block content %}
+          <h1>{% block title %} Exoplanets {% endblock %}</h1>
+          {% for exoplanet in exoplanets %}
+              <div class="exoplanet">
+                <hr3>#{{ exoplanet[0] }} - {{ exoplanet[1] }} Confirmed in Year {{ exoplanet[2] }}</hr3>
+              </div>
+          {% endfor %}
+        {% endblock %}
      </main>      
    </body>
 </html>
