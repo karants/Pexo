@@ -1,3 +1,6 @@
 psycopg2
 flask
 python-dotenv
+json
+requests
+math
