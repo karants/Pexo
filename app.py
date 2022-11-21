@@ -9,6 +9,8 @@ import math
 
 earth_gravity = 9.81
 pc_to_ly = 3.26156
+sun_pixels = 500
+earth_pixels = 4.58
 
 app = Flask(__name__)
 
@@ -59,7 +61,7 @@ def hello():
    exoplanet = request.form.get('exoplanet')
    user_weight = request.form.get('weight')
    birthday = request.form.get('birthday')
-   req = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+pl_name,pl_masse,pl_rade,sy_dist,pl_orbper,disc_year,disc_facility,discoverymethod,disc_pubdate,pl_pubdate+from+ps+where+pl_name+=+'"+exoplanet+"'+and+pl_masse+>+0+and+pl_rade+>+0+order+by+pl_pubdate+desc&format=json")
+   req = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+pl_name,pl_masse,pl_rade,st_rad,sy_dist,pl_orbper,disc_year,disc_facility,discoverymethod,disc_pubdate,pl_pubdate+from+ps+where+pl_name+=+'"+exoplanet+"'+and+pl_masse+>+0+and+pl_rade+>+0+order+by+pl_pubdate+desc&format=json")
    data = json.loads(req.content)
    exoplanet_details=data[0]
 
@@ -72,8 +74,12 @@ def hello():
 
    print(birthday)
    print(type(birthday))
+
    #date of birth calculator
    exo_birth = (datetime.today() - datetime.strptime(birthday,'%Y-%m-%d')).days / exoplanet_details['pl_orbper']
+
+   #ratio calculator
+   exoplanet_pixels = (sun_pixels / ((sun_pixels * exoplanet_details['st_rad'])/(earth_pixels * exoplanet_details['pl_rade'])))
 
 
    if exoplanet:
@@ -81,9 +87,10 @@ def hello():
        return render_template('results.html', 
         exoplanet = exoplanet, 
         exoplanet_details = exoplanet_details, 
-        weight = user_weight_exoplanet, 
-        exo_birth = exo_birth,
-        distance = distance_from_earth)
+        weight = round(user_weight_exoplanet), 
+        exo_birth = round(exo_birth),
+        exoplanet_pixels = str(exoplanet_pixels) + "px",
+        distance = round(distance_from_earth))
    else:
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
