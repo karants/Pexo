@@ -49,7 +49,10 @@ def index():
    print(exoplanets)
    exoplanets_list = (list(dict.fromkeys(exoplanets)))
 
-   return render_template('index.html', exoplanets=exoplanets_list)
+   return render_template('index.html', 
+    exoplanets=exoplanets_list,
+    top10 = ["Kepler-10 c", "Kepler-23 c", "HAT-P-51 b", "TrES-2 b", "TOI-561 c", "OGLE2-TR-L9 b", "Qatar-5 b", "WASP-96 b", "NGTS-6 b", "Kepler-282 e"],
+    )
 
 @app.route('/favicon.ico')
 def favicon():
