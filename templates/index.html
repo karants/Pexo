@@ -88,7 +88,7 @@
         <div class="text-center">
           <h1>Welcome to Pexo</h1> 
             <img src="{{ url_for('static', filename='images/exoplanet.svg') }}" alt="Exoplanet" width="192" height="192"/>
-        </div><br>
+        </div><br><br>
 
         <form method="post" action="{{url_for('results')}}">
               
@@ -121,14 +121,14 @@
                 <br>  
                 <div>
                     <label><h5>Enter your weight:</h5></label>
-                    <input type="float"  id="weight" name="weight" required>
-                    <input type="radio" id="kilograms" name="weight" value="kilograms" required> kilograms
-                    <input type="radio" id="pounds" name="weight" value="pounds" required> pounds
+                    <input type="float"  id="weight" name="weight" style="width: 120px;"required>
+                    <input type="radio" id="kilograms" name="weighttype" value="kilograms" required> kilograms
+                    <input type="radio" id="pounds" name="weighttype" value="pounds" required> pounds
                 </div><br> 
  
                 <div>
                 <label><h5>Enter your birthdate:</h5></label> 
-                <input type="date"  id="birthday" name="birthday" required>
+                <input type="date"  id="birthday" name="birthday" style="width: 120px;"required>
                 </div><Br>
                 </div>
 

@@ -63,6 +63,7 @@ def favicon():
 def results():
    exoplanet = request.form.get('exoplanet')
    user_weight = request.form.get('weight')
+   user_weighttype = request.form.get('weighttype')
    birthday = request.form.get('birthday')
    req = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+pl_name,pl_masse,pl_rade,st_rad,sy_dist,pl_orbper,disc_year,disc_facility,discoverymethod,disc_pubdate,pl_pubdate+from+ps+where+pl_name+=+'"+exoplanet+"'+and+pl_masse+>+0+and+pl_rade+>+0+order+by+pl_pubdate+desc&format=json")
    data = json.loads(req.content)
@@ -95,12 +96,14 @@ def results():
        return render_template('results.html', 
         exoplanet = exoplanet, 
         exoplanet_details = exoplanet_details, 
-        weight = round(user_weight_exoplanet), 
+        weight = round(user_weight_exoplanet),
+        weighttype = user_weighttype, 
         exo_birth = round(exo_birth),
         exoplanet_pixels = str(exoplanet_pixels) + "px",
         year_of_discovery = year_of_discovery,
         method_of_discovery = method_of_discovery,
         discovery_facility = discovery_facility,
+        orbital_period = round(exoplanet_details['pl_orbper']),
         distance = round(distance_from_earth))
    else:
        print('Request for hello page received with no name or blank name -- redirecting')
