@@ -4,6 +4,24 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <style>
+    .float-element-personal {
+        float: none;
+        width: 250px;
+        height: 50px;
+        margin: 5px;
+        background:  #FFAE00;
+        text-align: center;
+    }
+    .float-element-planet {
+        float: left;
+        width: 300px;
+        height: 50px;
+        margin: 5px;
+        background:  #224E7D;
+        position: relative;
+        text-align: center;
+        color:white;
+    }
     .sun { 
       width: 500px;
     height: 500px;
@@ -41,7 +59,9 @@
     .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-gap: 10px
+    grid-gap: 10px;
+    padding-bottom: 3px;
+    margin-bottom: 3px;
     }
     </style>
 
@@ -50,19 +70,35 @@
 <html>
    <body>
      <main>
-        <div class="px-4 py-3 my-2 text-center">
-            <!-- <img class="d-block mx-auto mb-4" src="{{ url_for('static', filename='images/exoplanet.svg') }}" alt="Exoplanet" width="192" height="192"/> -->
-            <!-- <img  src="/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
-            <h1 class="display-6 fw-bold">{{exoplanet}}</h1>
-            <p class="fs-5">
-                <br><br>your weight is {{weight}}
-                <br><br>distance from earth is {{distance}} light-years
-                <br><br>you are {{exo_birth}} years old
-            </p>
-            <div class="grid-container">
-              <div class="grid-child" style="background-color:black; height:10%; width:100%; display:flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;"> Sun-Earth Size Comparison</div>
-              <div class="grid-child" style="background-color:black; height:10%; width:100%; display:flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;"> Host Star-Exoplanet Size Comparison</div>
-              <div class="grid-child" style="background-color: black; height: 120%; width:100%; display:flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center;">
+              <div class="px-4 py-3 my-2 text-center">
+              <h1 class="display-6 fw-bold">{{exoplanet}}</h1>
+              </div>
+            
+                <br>
+                <div style=" max-width: max-content; margin: auto;">
+                <div class="float-element-personal"><b>YOUR RELATIVE WEIGHT</b><br>{{weight}}</div>
+                <div class="float-element-personal"><b>YOUR RELATIVE AGE</b><br>{{exo_birth}} years</div>
+                </div>
+
+                <div style="position: relative; display: block; clear:both; max-width: max-content; margin: auto;">
+ 
+                <div class="float-element-planet"><b>DISTANCE FROM EARTH</b><br>{{distance}} light years</div>
+                <div class="float-element-planet"><b>DISCOVERY YEAR</b><br>{{year_of_discovery}}</div>
+                <div class="float-element-planet"><b>DISCOVERY METHOD</b><br>{{method_of_discovery}}</div>
+                <div class="float-element-planet"><b>DISCOVERY FACILITY</b><br>{{discovery_facility}}</div>     
+              </div>
+            <br><br>
+            <div style="clear:both;">
+              <br><br>
+              <div class="grid-container">
+              <div class="grid-child" style=" height:100%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center;border-style: solid;border-width: 5px 0px 0px 0px;"> <b>Sun vs Earth [Size Comparison]</b></div>
+              <div class="grid-child" style=" height:100%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; border-style: solid; border-width: 5px 0px 0px 0px;"> <b>Host Star vs {{exoplanet}} [Size Comparison]</b></div>
+              </div>  
+            </div>
+            <div style="clear:both;">
+
+              <div class="grid-container">              
+              <div class="grid-child" style="background-color: black; height: 120%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center;">
                 <div class="sun" style="color: white;"></div>
                 <div class="earth"style="left: -150px; position: relative;"></div>
               </div>
@@ -71,13 +107,9 @@
               <div class="exoplanet"style="left: -150px; position: relative;"> </div>
               </div>
             </div>
-              <div style="line-height:150%;">
-                <br>
-              </div>
-
-            <div><a href="{{ url_for('index') }}" class="btn btn-primary btn-lg px-4 gap-3">Back home</a></div>
-            
           </div>
+            <div style="position: absolute; text-align: center; clear: both;"><a href="{{ url_for('index') }}" class="btn btn-primary">Back home</a></div>
+
      </main>      
    </body>
 </html>

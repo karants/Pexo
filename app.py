@@ -57,7 +57,7 @@ def favicon():
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/results', methods=['POST'])
-def hello():
+def results():
    exoplanet = request.form.get('exoplanet')
    user_weight = request.form.get('weight')
    birthday = request.form.get('birthday')
@@ -65,12 +65,17 @@ def hello():
    data = json.loads(req.content)
    exoplanet_details=data[0]
 
-   #weight calculation
-   user_weight_exoplanet = ((float(user_weight)/earth_gravity) * ((float(exoplanet_details['pl_masse'])/float(math.pow(exoplanet_details['pl_rade'],2))))*10)
+   #weight calculation - Weight on Other Planet = Weight on Earth x Multiple of Earth’s Gravity
+   user_weight_exoplanet = ((float(user_weight)) * ((float(exoplanet_details['pl_masse'])/float(math.pow(exoplanet_details['pl_rade'],2)))))
    print(user_weight_exoplanet)
    
    #distance calculation
    distance_from_earth = exoplanet_details['sy_dist'] * pc_to_ly
+
+   #exoplanet features
+   year_of_discovery = exoplanet_details['disc_year']
+   method_of_discovery = exoplanet_details['discoverymethod']
+   discovery_facility = exoplanet_details['disc_facility']
 
    print(birthday)
    print(type(birthday))
@@ -90,6 +95,9 @@ def hello():
         weight = round(user_weight_exoplanet), 
         exo_birth = round(exo_birth),
         exoplanet_pixels = str(exoplanet_pixels) + "px",
+        year_of_discovery = year_of_discovery,
+        method_of_discovery = method_of_discovery,
+        discovery_facility = discovery_facility,
         distance = round(distance_from_earth))
    else:
        print('Request for hello page received with no name or blank name -- redirecting')
