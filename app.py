@@ -1,11 +1,14 @@
 import os
-from dotenv import load_dotenv
+
 import psycopg2
 from datetime import datetime, date
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 import json
 import requests
 import math
+
+from model.ExoplanetAPI import ExoplanetAPI
+from model.DBConnection import DBWrite, DBRead
 
 earth_gravity = 9.81
 pc_to_ly = 3.26156
@@ -14,44 +17,19 @@ earth_pixels = 4.58
 
 app = Flask(__name__)
 
-# Update connection string information
-load_dotenv()
-host=os.getenv('HOST')
-dbname = os.getenv('DBNAME')
-user = os.getenv('USER')
-password = os.getenv('PASSWORD')
-sslmode = "require"
-print(host)
-# Construct connection string
-
-conn_string = "host={0} user={1} dbname={2} password={3} sslmode={4}".format(host, user, dbname, password, sslmode)
-
+DBWriteConnection = DBWrite()
+DBReadConnection = DBRead()
 
 @app.route('/')
 def index():
     
-   #conn = psycopg2.connect(conn_string)
-   #print("Connection established")
-   #cursor = conn.cursor()
-   #print('Request for index page received')
-   #cursor.execute('SELECT * FROM exoplanets;')
-   #exoplanets = cursor.fetchall()
-   #cursor.close()
-   #conn.close()
+    APIConnection = ExoplanetAPI()
+    Exoplanets = APIConnection.GetExoplanetsList()
+   
 
-   req = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+pl_name+from+ps+where+pl_masse+>+0+and+pl_rade+>+0+and+lower(soltype)+like+'%conf%'&format=json")
-   data = json.loads(req.content)
-   exoplanets=[]
-   for row in data:
-    for exoplanet in row.values():
-        exoplanets.append(exoplanet)
-
-   print(exoplanets)
-   exoplanets_list = (list(dict.fromkeys(exoplanets)))
-
-   return render_template('index.html', 
-    exoplanets=exoplanets_list,
-    top10 = ["Kepler-10 c", "Kepler-23 c", "HAT-P-51 b", "TrES-2 b", "TOI-561 c", "OGLE2-TR-L9 b", "Qatar-5 b", "WASP-96 b", "NGTS-6 b", "Kepler-282 e"],
+    return render_template('index.html', 
+    exoplanets=Exoplanets,
+    top10 = [DBReadConnection.GetTopHits()[_][0] for _ in range(len(DBReadConnection.GetTopHits()))],
     )
 
 @app.route('/favicon.ico')
@@ -61,13 +39,21 @@ def favicon():
 
 @app.route('/results', methods=['POST'])
 def results():
-   exoplanet = request.form.get('exoplanet')
+   ChosenExoplanet = request.form.get('exoplanet')
    user_weight = request.form.get('weight')
    user_weighttype = request.form.get('weighttype')
    birthday = request.form.get('birthday')
-   req = requests.get("https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+pl_name,pl_masse,pl_rade,st_rad,sy_dist,pl_orbper,disc_year,disc_facility,discoverymethod,disc_pubdate,pl_pubdate+from+ps+where+pl_name+=+'"+exoplanet+"'+and+pl_masse+>+0+and+pl_rade+>+0+order+by+pl_pubdate+desc&format=json")
-   data = json.loads(req.content)
-   exoplanet_details=data[0]
+   
+   APIConnection = ExoplanetAPI()
+   exoplanet_details = APIConnection.GetExoplanetDetails(ChosenExoplanet)
+
+
+#    DBConnWrite2 = DBConnectionWrite()
+   print(DBWriteConnection)
+#    print(db)
+
+   DBWriteConnection.LogHits(ChosenExoplanet)
+
 
    #weight calculation - Weight on Other Planet = Weight on Earth x Multiple of Earth’s Gravity
    user_weight_exoplanet = ((float(user_weight)) * ((float(exoplanet_details['pl_masse'])/float(math.pow(exoplanet_details['pl_rade'],2)))))
@@ -91,10 +77,10 @@ def results():
    exoplanet_pixels = (sun_pixels / ((sun_pixels * exoplanet_details['st_rad'])/(earth_pixels * exoplanet_details['pl_rade'])))
 
 
-   if exoplanet:
-       print('Request for hello page received with name=%s' % exoplanet)
+   if ChosenExoplanet:
+       print('Request for hello page received with name=%s' % ChosenExoplanet)
        return render_template('results.html', 
-        exoplanet = exoplanet, 
+        exoplanet = ChosenExoplanet, 
         exoplanet_details = exoplanet_details, 
         weight = round(user_weight_exoplanet),
         weighttype = user_weighttype, 
