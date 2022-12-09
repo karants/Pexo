@@ -1,100 +1,95 @@
+#This is the controller. It runs the Flask app and passes inputs and outputs between the Model and the View.
+
+#Author: Karan Shah
+#Contact: shahk47@mcmaster.ca
+
+#Importing Pip libraries
 import os
-
-import psycopg2
-from datetime import datetime, date
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
-import json
-import requests
-import math
 
+#Importing classes from model directory
 from model.ExoplanetAPI import ExoplanetAPI
 from model.DBConnection import DBWrite, DBRead
+from model.UserDetails import User
+from model.PlanetarySystem import Exoplanet, Earth
+from model.DesignElements import SunElement,EarthElement,ExoplanetElement,StellarElement
 
-earth_gravity = 9.81
-pc_to_ly = 3.26156
-sun_pixels = 500
-earth_pixels = 4.58
-
+#Initializing Flask instance
 app = Flask(__name__)
 
+#Instantiating Database Write & Read Connections
 DBWriteConnection = DBWrite()
 DBReadConnection = DBRead()
 
+#Home Route
 @app.route('/')
 def index():
     
+    #Instantiating the ExoplanetAPI facade implementation
     APIConnection = ExoplanetAPI()
-    Exoplanets = APIConnection.GetExoplanetsList()
-   
 
+    #Returning list of exoplanets and top 10 most viewed exoplanets to the Index view
     return render_template('index.html', 
-    exoplanets=Exoplanets,
-    top10 = [DBReadConnection.GetTopHits()[_][0] for _ in range(len(DBReadConnection.GetTopHits()))],
+    exoplanets = APIConnection.GetExoplanetsList(),
+    top10 = DBReadConnection.GetTopHits(),
     )
 
+#Favorite Icon route
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+#Results Route
 @app.route('/results', methods=['POST'])
 def results():
+
+   #Receiving the chosen exoplanet input from the user
    ChosenExoplanet = request.form.get('exoplanet')
-   user_weight = request.form.get('weight')
-   user_weighttype = request.form.get('weighttype')
-   birthday = request.form.get('birthday')
-   
+
+   #Instantiating the ExoplanetAPI facade implementation and obtaining details of the chosen exoplanet
    APIConnection = ExoplanetAPI()
-   exoplanet_details = APIConnection.GetExoplanetDetails(ChosenExoplanet)
+   PlanetaryDetails = APIConnection.GetExoplanetDetails(ChosenExoplanet)
 
-
-#    DBConnWrite2 = DBConnectionWrite()
-   print(DBWriteConnection)
-#    print(db)
-
+   #Logging the Chosen Exoplanet in the hits table to track number of hits and identify the top viewed exoplanets
    DBWriteConnection.LogHits(ChosenExoplanet)
 
+   #Instantiating the user object with input received from the end user
+   user = User(request.form.get('weight'), request.form.get('weighttype'), request.form.get('birthday'))
 
-   #weight calculation - Weight on Other Planet = Weight on Earth x Multiple of Earth’s Gravity
-   user_weight_exoplanet = ((float(user_weight)) * ((float(exoplanet_details['pl_masse'])/float(math.pow(exoplanet_details['pl_rade'],2)))))
-   print(user_weight_exoplanet)
-   
-   #distance calculation
-   distance_from_earth = exoplanet_details['sy_dist'] * pc_to_ly
+   #Instantiating the Exoplanet and Earth Planetary System Objects with details obtained from the APIImplementation facade
+   exoplanet = Exoplanet(PlanetaryDetails)
+   earth = Earth()
 
-   #exoplanet features
-   year_of_discovery = exoplanet_details['disc_year']
-   method_of_discovery = exoplanet_details['discoverymethod']
-   discovery_facility = exoplanet_details['disc_facility']
+   #Creating specific design elements for the view
+   SunElementDesign = SunElement()
+   EarthElementDesign = EarthElement(earth.CONST_RADIUS, earth.CONST_STELLARRADIUS, SunElementDesign.GetPixels())
+   StellarElementDesign = StellarElement()  
+   ExoplanetElementDesign = ExoplanetElement(exoplanet.Radius, exoplanet.StellarRadius, StellarElementDesign.GetPixels(), earth.CONST_RADIUS, earth.CONST_STELLARRADIUS)
 
-   print(birthday)
-   print(type(birthday))
-
-   #date of birth calculator
-   exo_birth = (datetime.today() - datetime.strptime(birthday,'%Y-%m-%d')).days / exoplanet_details['pl_orbper']
-
-   #ratio calculator
-   exoplanet_pixels = (sun_pixels / ((sun_pixels * exoplanet_details['st_rad'])/(earth_pixels * exoplanet_details['pl_rade'])))
-
-
+   #Rendering the results view with processed and parsed data relevant to the view
    if ChosenExoplanet:
-       print('Request for hello page received with name=%s' % ChosenExoplanet)
+
        return render_template('results.html', 
-        exoplanet = ChosenExoplanet, 
-        exoplanet_details = exoplanet_details, 
-        weight = round(user_weight_exoplanet),
-        weighttype = user_weighttype, 
-        exo_birth = round(exo_birth),
-        exoplanet_pixels = str(exoplanet_pixels) + "px",
-        year_of_discovery = year_of_discovery,
-        method_of_discovery = method_of_discovery,
-        discovery_facility = discovery_facility,
-        orbital_period = round(exoplanet_details['pl_orbper']),
-        distance = round(distance_from_earth))
+        ChosenExoplanet = exoplanet.Name, 
+        ExoplanetDetailsDictionary =  exoplanet.GetExoplanetDetailsDictionary(), 
+        RelativeUserWeight = user.CalculateRelativeWeight(exoplanet.RelativeGravity),
+        RelativeUserAge = user.CalculateRelativeAge(exoplanet.OrbitalPeriod),
+        WeightType = user.WeightType, 
+        ExoplanetSize = str(ExoplanetElementDesign.GetPixels()) + "px",
+        ExoplanetColour = ExoplanetElementDesign.GetColour(),
+        StellarSize = str(StellarElementDesign.GetPixels()) + "px",
+        StellarColour = StellarElementDesign.GetColour(),
+        EarthSize = str(EarthElementDesign.GetPixels()) + "px",
+        EarthColour = EarthElementDesign.GetColour(),
+        SunSize = str(SunElementDesign.GetPixels()) + "px",
+        SunColour = SunElementDesign.GetColour()
+       )
+
    else:
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
-
+#Running the Flask instance
 if __name__ == '__main__':
    app.run()

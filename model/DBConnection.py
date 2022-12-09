@@ -1,8 +1,16 @@
+#This is a model implementation named DBconnection. It facilitates read and write capabilities with a SQL database.
+#DBWrite is implemented using Singleton pattern to log data into the DB.
+#DBRead is implemented using Object Pool Pattern. The DBReadPool acts as the Object Pool and is implemented as a Singleton.
+
+#Author: Karan Shah
+#Contact: shahk47@mcmaster.ca
+
+#Importing Pip Libraries
 from dotenv import load_dotenv
 import psycopg2
 import os
-import warnings
 
+#Defining the connection string to the DB that can be utilized by multiple DB connection objects - reducing code duplication
 class DBConnectionString:
 
     def __init__(self):
@@ -19,39 +27,42 @@ class DBConnectionString:
     def GetConnectionString(self):
         return self.__conn_string
 
-#Singleton Pattern
+#Singleton Pattern Implementation for Logging Data to the DB
 class DBWrite:
     _instance = None
 
     def __init__(self):
 
+        #Exception is raised when there is an attempt to instantiate the object more than once
         if DBWrite._instance != None:
             raise Exception("%s is a Singleton object. It can only be instantiated once." % type(self).__name__)
         else:
             DBWrite._instance = self
 
+        #Connecting to the DB and obtaining the cursor
         self.conn = DBConnectionString()
         self.conn_string = self.conn.GetConnectionString()
         self.conn = psycopg2.connect(self.conn_string)
         self.cursor = self.conn.cursor()
 
+    #Just in case there is a need to clear all the hits :) Not used actively.
     def ClearHits(self):
         
-        # Drop current table
+        # Drop the hits table
         self.cursor.execute("DROP TABLE IF EXISTS Pexo_Hits;")
 
-        # Create a table
+        # Create the hits table. Exoplanetname works as primary key as the list is uniquely generated from the API call (ExoplanetAPI)
         self.cursor.execute("CREATE TABLE Pexo_Hits (exoplanetname VARCHAR(100) PRIMARY KEY, hits INTEGER);")
         self.conn.commit()
 
     def LogHits(self, ExoplanetName):
        
-        # Insert some data into the table
+        # Inserting the exoplanet name if it does not exist into the hits table and updating the hits (current hits + 1)
         self.cursor.execute("INSERT INTO Pexo_Hits (exoplanetname, hits) SELECT '" + ExoplanetName +"',0 WHERE NOT EXISTS (SELECT exoplanetname FROM Pexo_Hits WHERE exoplanetname = '" + ExoplanetName + "');")
         self.cursor.execute("UPDATE Pexo_Hits set hits = hits + 1 WHERE exoplanetname = '" + ExoplanetName +"';")
         self.conn.commit()
 
-#object pool + singleton pattern 
+#object pool + singleton pattern  implementation
 class DBReadPool:
 
     _instance = None
@@ -65,33 +76,42 @@ class DBReadPool:
 
         self.conn = DBConnectionString()
         self.conn_string = self.conn.GetConnectionString()
+
+        #array for the pool
         self._reusableconnections = []
 
+        #filling up the pool with DB connections
         for _ in range(size):
             self.conn = psycopg2.connect(self.conn_string)
             self._reusableconnections.append(self.conn.cursor())
 
+    #Function to acquire a DB connection
     def acquire(self):
         return self._reusableconnections.pop()
 
+    #Function to release a DB connection
     def release(self, reusable):
         self._reusableconnections.append(reusable)
 
+
+#Executing DB read functions
 class DBRead:
 
     def __init__(self):
 
+        #instantiating the pool with a size
         self.pool = DBReadPool(5)
+        #defining the number of total number hits to obtain
         self.maxhits = 10
 
+    #Function to get the top hits from the hits table
     def GetTopHits(self):
         
         self.conn = self.pool.acquire()
         self.conn.execute("SELECT * FROM Pexo_Hits ORDER BY hits desc LIMIT %s"% self.maxhits)
-        self.tophits= self.conn.fetchall()
+        self.hits= self.conn.fetchall()
         self.pool.release(self.conn)
+        self.tophits = [self.hits[_][0] for _ in range(len(self.hits))]
 
+        #returning array of exoplanet names
         return self.tophits
-    
-# cursor.close()
-# conn.close()

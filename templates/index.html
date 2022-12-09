@@ -86,17 +86,19 @@
      <main>
         <div class="content">
         <div class="text-center">
-          <h1>Welcome to Pexo</h1> 
-            <img src="{{ url_for('static', filename='images/exoplanet.svg') }}" alt="Exoplanet" width="192" height="192"/>
-        </div><br><br>
+            <br><img src="{{ url_for('static', filename='images/exoplanet.svg') }}" alt="Exoplanet" width="192" height="192"/>
+        </div>
+        <br> 
+        <div style=" height: 40px; padding-right: 18px; margin: 20px; background:#224E7D; color:white">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome to Pexo. Search or select an exoplanet and find your relative weight, relative age and more cool facts on it!<br>
+        </div>
 
         <form method="post" action="{{url_for('results')}}">
-              
-           
-                <div class="text-center row" style=" width: 850px; height: 200px; margin: 20px; background:#FFAE00;">
+                         
+                <div class="text-center row" style=" width: 860px; height: 200px; margin: 20px; background:#FFAE00;">
 
                   <div class="column left">
-                      <br><h5>Choose an exoplanet from the list:</h5>
+                      <br><h5>Search or Choose an exoplanet from the list:</h5>
                       <input  list="exoplanets" name="exoplanet" id="exoplanet" style="width: 500px;" required>
                           <datalist id="exoplanets">
                               {% for exoplanet in exoplanets %}

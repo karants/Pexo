@@ -26,37 +26,38 @@
         color:white;
     }
     .sun { 
-      width: 500px;
-    height: 500px;
+      width: {{SunSize}};
+    height: {{SunSize}};
     border-radius: 50%;
-    background-color: #DE9700;
+    background-color: {{SunColour}};
       }
 
     .earth { 
-    width: 4.58px;
-    height:4.58px;
+    width: {{EarthSize}};
+    height: {{EarthSize}};
     border-radius: 50%;
-
-    background-color: #1A3D61 ;
+    left: -150px; 
+    position: relative;
+    background-color: {{EarthColour}} ;
     box-shadow:
     0 0 0.5px 0.5px rgb(220, 228, 232); /* outer cyan */
       }
 
-    .star { 
-      width: 500px;
-    height: 500px;
+    .stellar { 
+    width: {{StellarSize}};
+    height: {{StellarSize}};
     border-radius: 100%;
-    background-color:#FFAE00;
+    background-color: {{StellarColour}};
       }
 
     .exoplanet { 
-    width: {{exoplanet_pixels}};
-    height: {{exoplanet_pixels}};
+    width: {{ExoplanetSize}};
+    height: {{ExoplanetSize}};
     border-radius: 50%;
-
-    background-color: #3C6795;
-    box-shadow:
-    0 0 0.5px 0.5px rgb(220, 228, 232); /* outer cyan */
+    left: -150px; 
+    position: relative;
+    background-color: {{ExoplanetColour}};
+    box-shadow: 0 0 0.5px 0.5px rgb(220, 228, 232); /* outer cyan */
       }
     
     #backhome {
@@ -64,7 +65,6 @@
             bottom: 0;
             text-align: center;
             clear: both;
-            background:#1A3D61;
         }
 
     .grid-container {
@@ -82,29 +82,29 @@
    <body>
      <main>
               <div class="px-4 py-3 my-2 text-center">
-              <h1 class="display-6 fw-bold">{{exoplanet}}</h1>
+              <h1 class="display-6 fw-bold">{{ChosenExoplanet}}</h1>
               </div>
             
                 <br>
                 <div style="position: relative; display: block; clear:both; max-width: max-content; margin: auto;">
-                <div class="float-element-personal"><b>YOUR RELATIVE WEIGHT</b><br>{{weight}} {{weighttype}}</div>
-                <div class="float-element-personal"><b>YOUR RELATIVE AGE</b><br>{{exo_birth}} years</div>
+                <div class="float-element-personal"><b>YOUR RELATIVE WEIGHT</b><br>~{{RelativeUserWeight}} {{WeightType}}</div>
+                <div class="float-element-personal"><b>YOUR RELATIVE AGE</b><br>~{{RelativeUserAge}} years</div>
                 </div>
 
                 <div style="position: relative; display: block; clear:both; max-width: max-content; margin: auto;">
  
-                <div class="float-element-planet"><b>DISTANCE FROM EARTH</b><br>~{{distance}} light years</div>
-                <div class="float-element-planet"><b>ORBITAL PERIOD</b><br>~{{orbital_period}} days</div>    
-                <div class="float-element-planet"><b>DISCOVERY YEAR</b><br>{{year_of_discovery}}</div>
-                <div class="float-element-planet"><b>DISCOVERY METHOD</b><br>{{method_of_discovery}}</div>
-                <div class="float-element-planet"><b>DISCOVERY FACILITY</b><br>{{discovery_facility}}</div>    
+                <div class="float-element-planet"><b>DISTANCE FROM EARTH</b><br>~{{ExoplanetDetailsDictionary['DistanceFromEarth']}} light years</div>
+                <div class="float-element-planet"><b>ORBITAL PERIOD</b><br>~{{ExoplanetDetailsDictionary['OrbitalPeriod']}} days</div>    
+                <div class="float-element-planet"><b>DISCOVERY YEAR</b><br>{{ExoplanetDetailsDictionary['DiscoveryYear']}}</div>
+                <div class="float-element-planet"><b>DISCOVERY METHOD</b><br>{{ExoplanetDetailsDictionary['DiscoveryMethod']}}</div>
+                <div class="float-element-planet"><b>DISCOVERY FACILITY</b><br>{{ExoplanetDetailsDictionary['DiscoveryFacility']}}</div>    
               </div>
             <br><br>
             <div style="clear:both;">
               <br><br>
               <div class="grid-container">
               <div class="grid-child" style=" height:100%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center;border-style: solid;border-width: 5px 0px 0px 0px;"> <b>Sun vs Earth [Size Comparison]</b></div>
-              <div class="grid-child" style=" height:100%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; border-style: solid; border-width: 5px 0px 0px 0px;"> <b>Host Star vs {{exoplanet}} [Size Comparison]</b></div>
+              <div class="grid-child" style=" height:100%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center; border-style: solid; border-width: 5px 0px 0px 0px;"> <b>Host Star vs {{ChosenExoplanet}} [Size Comparison]</b></div>
               </div>  
             </div>
             <div style="clear:both;">
@@ -112,11 +112,11 @@
               <div class="grid-container">              
               <div class="grid-child" style="background-color: black; height: 120%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center;">
                 <div class="sun"></div>
-                <div class="earth"style="left: -150px; position: relative;"></div>
+                <div class="earth"></div>
               </div>
               <div class="grid-child" style="background-color: black; height: 120%; width:100%; display:flex; flex-direction: row; flex-wrap: nowrap; justify-content: center; align-items: center;">
-              <div class="star"></div>
-              <div class="exoplanet"style="left: -150px; position: relative;"> </div>
+              <div class="stellar"></div>
+              <div class="exoplanet"> </div>
               </div>
             </div>
           </div>
