@@ -1,7 +1,7 @@
 #This is a model implementation named Planetary System. Could not find a way to implement a design pattern.
 # Would love to hear how this can be better implemented.
 #It has been called Planetary system, in case future iterations include analysis on the Stellar host or Moons that orbit around the exoplanet.
-#Currently, creating only the planet object
+#Currently, creating only the planet object is sufficient
 
 #Author: Karan Shah
 #Contact: shahk47@mcmaster.ca

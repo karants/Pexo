@@ -1,6 +1,6 @@
 #This is a model implementation named Exoplanet API. It is a single class that acts as a facade for the client. 
 # NASA supported and Caltech hosted exoplanets API uses Table Access Protocol 
-# which is quite extensive in terms of use cases. However, this model make it fairly simple for the controller to obtain 
+# which is quite extensive in terms of different functionalities. However, this model make it  simple for the controller to obtain 
 #exoplanet related data
 
 #Author: Karan Shah

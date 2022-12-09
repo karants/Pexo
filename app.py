@@ -2,6 +2,8 @@
 
 #Author: Karan Shah
 #Contact: shahk47@mcmaster.ca
+#Hosted on: https://pexo.azurewebsites.net
+#SCM & CI/CD: https://github.com/karants/pexo
 
 #Importing Pip libraries
 import os

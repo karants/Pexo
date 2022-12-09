@@ -1,4 +1,4 @@
-#This is a model implementation named DBconnection. It facilitates read and write capabilities with a SQL database.
+#This is a model implementation named DBconnection. It facilitates read and write capabilities with an SQL database.
 #DBWrite is implemented using Singleton pattern to log data into the DB.
 #DBRead is implemented using Object Pool Pattern. The DBReadPool acts as the Object Pool and is implemented as a Singleton.
 
