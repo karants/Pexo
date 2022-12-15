@@ -2,6 +2,7 @@
 # NASA supported and Caltech hosted exoplanets API uses Table Access Protocol 
 # which is quite extensive in terms of different functionalities. However, this model make it  simple for the controller to obtain 
 #exoplanet related data
+#forcing commit
 
 #Author: Karan Shah
 #Contact: shahk47@mcmaster.ca
